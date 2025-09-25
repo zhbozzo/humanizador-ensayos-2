@@ -1,6 +1,6 @@
 import { useSession } from "../lib/useSession";
 import { useState } from "react";
-import { detectLocale, t } from "../lib/i18n";
+import { detectLocale } from "../lib/i18n";
 // import { initPaddle, openCheckout } from "../lib/paddle";
 import { useProfileSummary } from "../lib/useProfileSummary";
 import { supabase } from "../lib/supabaseClient";
@@ -23,10 +23,6 @@ export default function Pricing({ onSubscribeIntent, onLogin }: { onSubscribeInt
     if (targetPeriod === currentPeriod) return true;
     // Bloquear cambio de periodo hasta terminar el ciclo
     return !hasActiveCycle();
-  };
-  const canUpgradeTo = (targetPlan: 'basic'|'pro'|'ultra') => {
-    const current = (summary?.plan || 'free') as 'free'|'basic'|'pro'|'ultra';
-    return planRank[targetPlan] >= planRank[current];
   };
   const blockReason = (targetPlan: 'basic'|'pro'|'ultra', targetPeriod: 'monthly'|'annual'): string | null => {
     const current = (summary?.plan || 'free') as 'free'|'basic'|'pro'|'ultra';

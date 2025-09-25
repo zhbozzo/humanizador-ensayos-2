@@ -13,10 +13,10 @@ type ProfileRow = {
 export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
   const { user, token, loading } = useSession();
   const [profile, setProfile] = useState<ProfileRow | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [busy] = useState(false);
+  const [error] = useState<string | null>(null);
   const locale = detectLocale();
-  const API = (import.meta as any).env.VITE_NODE_AUTH_URL || 'http://localhost:4000';
+  // const API = (import.meta as any).env.VITE_NODE_AUTH_URL || 'http://localhost:4000';
 
   const loadProfile = async () => {
     if (!user) return;
@@ -32,10 +32,9 @@ export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
     loadProfile();
   }, [user]);
 
-  const applyPlan = async (_plan: "free"|"basic"|"pro"|"ultra") => {
-    // Por ahora redirigimos a la página de precios para completar suscripción
-    onGoPricing();
-  };
+  // const applyPlan = async (_plan: "free"|"basic"|"pro"|"ultra") => {
+  //   onGoPricing();
+  // };
 
   const topUpSamePlan = async () => onGoPricing();
 
@@ -157,7 +156,7 @@ export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
         <button
           onClick={async ()=>{
             try {
-              const API = (import.meta as any).env.VITE_NODE_AUTH_URL || (typeof __VITE_NODE_AUTH_URL__ !== 'undefined' ? __VITE_NODE_AUTH_URL__ : 'http://localhost:4000');
+              const API = (import.meta as any).env.VITE_NODE_AUTH_URL || 'http://localhost:4000';
               const resp = await fetch(`${API}/api/paddle/portal`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
