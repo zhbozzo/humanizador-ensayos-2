@@ -174,7 +174,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
     } catch (e:any) { setErr(e.message); } finally { setLoading(false); }
   };
 
-  const logout = () => supabase.auth.signOut();
+  // const logout = () => supabase.auth.signOut();
 
   const signInWithProvider = async (provider: "google" | "apple") => {
     setErr(null);
@@ -416,7 +416,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
             disabled={loading}
             className="w-full rounded-lg btn-brand py-2.5 text-sm font-semibold disabled:opacity-60 transition-all hover:-translate-y-0.5 hover:shadow-lg"
           >
-            {loading ? (locale==='es' ? 'Procesando…' : 'Processing…') : (mode === 'signup' ? (locale==='es' ? 'Crear cuenta' : 'Create account') : (locale==='es' ? 'Entrar' : 'Log in'))}
+                  {loading ? (locale==='es' ? 'Procesando…' : 'Processing…') : (locale==='es' ? 'Entrar' : 'Log in')}
           </button>
           <button type="button" onClick={sendReset} className="text-xs text-gray-600 hover:underline hover:text-cyan-600 transition-colors mt-1 w-fit">
             {locale==='es' ? 'Enviarme un enlace de acceso por email' : 'Send me a login link via email'}

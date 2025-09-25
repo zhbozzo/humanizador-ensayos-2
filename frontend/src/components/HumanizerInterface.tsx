@@ -153,7 +153,7 @@ const HumanizerInterface: React.FC = () => {
     setDetecting(true);
     setDetectResult(null);
     try {
-      const res = await detectAI({ text, language: 'es' } as any, (u:any)=>{
+      const res = await detectAI({ text, language: 'es' } as any, (_update:any)=>{
         // despliega de inmediato el contenedor derecho durante el progreso
         if (!detectResult) setDetectResult({});
       });
