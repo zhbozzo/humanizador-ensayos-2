@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
 import { createClient } from '@supabase/supabase-js';
@@ -13,10 +13,10 @@ const corsOrigin = process.env.CORS_ORIGIN
 app.use(cors({ origin: corsOrigin as any, credentials: true }));
 // Capturar rawBody para verificación de firma en /api/webhooks/paddle
 app.use(express.json({
-  verify: (req: any, _res, buf) => {
+  verify: (req: Request & { rawBody?: string }, _res: Response, buf: Buffer) => {
     try {
-      if (req.originalUrl === '/api/webhooks/paddle') {
-        req.rawBody = buf.toString();
+      if ((req as any).originalUrl === '/api/webhooks/paddle') {
+        (req as any).rawBody = buf.toString();
       }
     } catch {}
   }
@@ -29,7 +29,7 @@ const supabaseAdmin = createClient(
   supabaseServiceRole
 );
 
-async function verifyUser(req: express.Request) {
+async function verifyUser(req: Request) {
   const auth = req.headers.authorization || '';
   const token = auth.startsWith('Bearer ')? auth.slice(7): null;
   if (!token) return null;
@@ -38,10 +38,10 @@ async function verifyUser(req: express.Request) {
   return data.user ?? null;
 }
 
-app.get('/health', (_req, res) => res.json({ ok: true }));
+app.get('/health', (_req: Request, res: Response) => res.status(200).send('ok'));
 
 // Verificar si un email existe en auth o en perfiles (para UX de reset)
-app.get('/api/auth/email-exists', async (req, res) => {
+app.get('/api/auth/email-exists', async (req: Request, res: Response) => {
   try {
     const email = String(req.query.email || '').toLowerCase();
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
@@ -103,14 +103,14 @@ function timingSafeEqualHex(a: string, b: string) {
   }
 }
 
-app.post('/api/webhooks/paddle', async (req, res) => {
+app.post('/api/webhooks/paddle', async (req: Request & { rawBody?: string }, res: Response) => {
   try {
     const secret = process.env.PADDLE_WEBHOOK_SECRET || '';
     if (!secret) return res.status(500).send('Missing webhook secret');
 
     const signatureHeader = req.get('paddle-signature') || req.get('Paddle-Signature') || '';
     const parsed = parsePaddleSignature(signatureHeader);
-    const raw = (req as any).rawBody || JSON.stringify(req.body || {});
+    const raw = req.rawBody || JSON.stringify(req.body || {});
     if (!parsed || !raw) return res.status(400).send('Bad signature header');
 
     // ts:unix + ':' + rawBody
@@ -171,7 +171,7 @@ app.post('/api/webhooks/paddle', async (req, res) => {
   }
 });
 
-app.post('/api/account/set-plan', async (req, res) => {
+app.post('/api/account/set-plan', async (req: Request, res: Response) => {
   try {
     const user = await verifyUser(req);
     if (!user) return res.status(401).json({ error: 'No auth' });
@@ -185,7 +185,7 @@ app.post('/api/account/set-plan', async (req, res) => {
   }
 });
 
-app.post('/api/humanize', async (req, res) => {
+app.post('/api/humanize', async (req: Request, res: Response) => {
   try {
     const user = await verifyUser(req);
     if (!user) return res.status(401).json({ error: 'No auth' });
@@ -233,6 +233,7 @@ app.post('/api/humanize', async (req, res) => {
     let out = '';
 
     async function debit(words: number) {
+      if (!user) return; // Type guard para TS
       await supabaseAdmin.rpc('debit_words', { p_user: user.id, p_words: words });
     }
 
@@ -268,7 +269,7 @@ app.post('/api/humanize', async (req, res) => {
 });
 
 // Crear sesión del Portal de Paddle (Customer Portal)
-app.post('/api/paddle/portal', async (req, res) => {
+app.post('/api/paddle/portal', async (req: Request, res: Response) => {
   try {
     const user = await verifyUser(req);
     if (!user) return res.status(401).json({ error: 'No auth' });
@@ -323,6 +324,5 @@ app.post('/api/paddle/portal', async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 4000, () =>
-  console.log(`API on http://localhost:${process.env.PORT || 4000}`)
-);
+const port = Number(process.env.PORT) || 4000;
+app.listen(port, () => console.log(`node-auth listening on :${port}`));
