@@ -40,7 +40,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
 
   // Google One Tap prompt (simulado si client id existe)
   useEffect(() => {
-    const CLIENT_ID = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID || (typeof __VITE_GOOGLE_CLIENT_ID__ !== 'undefined' ? __VITE_GOOGLE_CLIENT_ID__ : '');
+    const CLIENT_ID = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID || '';
     if (!CLIENT_ID || oneTapShown.current) return;
     oneTapShown.current = true;
     // Intentar cargar script de Google Identity Services
@@ -180,7 +180,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
     setErr(null);
     if (provider === 'google') {
       // Intentar GIS (IdToken) para que Google muestre nuestro dominio y no el de Supabase
-      const CLIENT_ID = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID || (typeof __VITE_GOOGLE_CLIENT_ID__ !== 'undefined' ? __VITE_GOOGLE_CLIENT_ID__ : '');
+      const CLIENT_ID = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID || '';
       // Debug mínimo para verificar carga de env
       try { console.debug('[login] VITE_GOOGLE_CLIENT_ID present:', !!CLIENT_ID); } catch {}
       if (!CLIENT_ID) {

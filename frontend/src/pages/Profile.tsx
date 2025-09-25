@@ -16,7 +16,7 @@ export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const locale = detectLocale();
-  const API = (import.meta as any).env.VITE_NODE_AUTH_URL || (typeof __VITE_NODE_AUTH_URL__ !== 'undefined' ? __VITE_NODE_AUTH_URL__ : 'http://localhost:4000');
+  const API = (import.meta as any).env.VITE_NODE_AUTH_URL || 'http://localhost:4000';
 
   const loadProfile = async () => {
     if (!user) return;

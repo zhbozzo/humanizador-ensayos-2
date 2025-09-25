@@ -4,8 +4,8 @@ export function initPaddle() {
     if (typeof Paddle !== 'undefined') {
       // @ts-ignore
       Paddle.Initialize({
-        environment: (import.meta as any).env?.VITE_PADDLE_ENV || (typeof __VITE_PADDLE_ENV__ !== 'undefined' ? __VITE_PADDLE_ENV__ : 'sandbox'),
-        token: (import.meta as any).env?.VITE_PADDLE_CLIENT_TOKEN || (typeof __VITE_PADDLE_CLIENT_TOKEN__ !== 'undefined' ? __VITE_PADDLE_CLIENT_TOKEN__ : ''),
+        environment: (import.meta as any).env?.VITE_PADDLE_ENV || 'sandbox',
+        token: (import.meta as any).env?.VITE_PADDLE_CLIENT_TOKEN || '',
       });
     }
   } catch {}

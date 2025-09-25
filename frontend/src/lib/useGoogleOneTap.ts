@@ -12,7 +12,7 @@ export function useGoogleOneTap(onLoggedIn?: () => void) {
 
   useEffect(() => {
     if (user) return; // No mostrar si ya hay sesión
-    const CLIENT_ID: string = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || (typeof __VITE_GOOGLE_CLIENT_ID__ !== 'undefined' ? (__VITE_GOOGLE_CLIENT_ID__ as string) : '');
+    const CLIENT_ID: string = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
     try { console.debug('[one-tap] VITE_GOOGLE_CLIENT_ID present:', !!CLIENT_ID); } catch {}
     if (!CLIENT_ID || initialized.current) return;
     initialized.current = true;
