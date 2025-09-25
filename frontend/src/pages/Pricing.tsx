@@ -1,5 +1,5 @@
 import { useSession } from "../lib/useSession";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { detectLocale, t } from "../lib/i18n";
 // import { initPaddle, openCheckout } from "../lib/paddle";
 import { useProfileSummary } from "../lib/useProfileSummary";
