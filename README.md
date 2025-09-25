@@ -331,3 +331,4 @@ Sin clave API, la aplicación funciona en modo demo. Para funcionalidad completa
 ## 📞 Soporte
 
 Para reportar bugs o solicitar features, por favor abre un issue en el repositorio de GitHub.
+
