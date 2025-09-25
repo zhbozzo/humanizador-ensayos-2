@@ -10,7 +10,7 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
@@ -23,5 +23,17 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "src/App_old.tsx",
+    "src/App_old2.tsx",
+    "src/components/HumanizerInterface_backup.tsx",
+    "src/components/HumanizerInterfaceSimple.tsx",
+    "src/components/HumanizerSimple.tsx",
+    "src/components/AIDetector.tsx",
+    "src/components/AIDetectorTab.tsx",
+    "src/components/ResultsSection.tsx",
+    "src/types/api_old.bak",
+    "src/services/api_old.bak"
+  ]
 }

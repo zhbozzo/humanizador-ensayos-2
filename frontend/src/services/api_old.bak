@@ -1,0 +1,105 @@
+import { HumanizeRequest, HumanizeResponse, DetectRequest, DetectResponse } from '../types/api';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+interface ApiError {
+  detail?: string;
+  message?: string;
+}
+
+class ApiService {
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${API_BASE_URL}${endpoint}`;
+    
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    const config: RequestInit = {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers,
+      },
+      // Sin timeout para permitir procesamiento largo
+      signal: undefined,
+    };
+
+    try {
+      console.log('Haciendo petición a:', url);
+      console.log('Con datos:', config.body);
+      
+      // Crear un AbortController con timeout de 300 segundos para textos largos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutos
+      
+      const response = await fetch(url, {
+        ...config,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        
+        try {
+          const errorData: ApiError = await response.json();
+          errorMessage = errorData.detail || errorMessage;
+        } catch {
+          // If we can't parse the error response, use the generic message
+        }
+        
+        console.error('Error HTTP:', errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      console.log('Respuesta recibida:', data);
+      return data;
+    } catch (error) {
+      console.error('Error en la petición:', error);
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error('La petición tardó demasiado tiempo. Por favor, intenta con un texto más corto.');
+        }
+        throw error;
+      } else {
+        throw new Error('Error de conexión');
+      }
+    }
+  }
+
+  async humanizeText(request: HumanizeRequest): Promise<HumanizeResponse> {
+    return this.request<HumanizeResponse>('/api/humanize', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+  }
+
+  async detectAI(request: DetectRequest): Promise<DetectResponse> {
+    return this.request<DetectResponse>('/api/detect', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+  }
+
+  async healthCheck(): Promise<{ status: string }> {
+    return this.request<{ status: string }>('/health');
+  }
+}
+
+// Create and export a singleton instance
+const apiService = new ApiService();
+export default apiService;
+
+// Export the main functions for easier importing
+export const humanizeText = (request: HumanizeRequest) => 
+  apiService.humanizeText(request);
+
+export const detectAI = (request: DetectRequest) =>
+  apiService.detectAI(request);

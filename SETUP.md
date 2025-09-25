@@ -156,3 +156,61 @@ El prompt incluye instrucciones específicas para:
 **Tiempo total de desarrollo**: Completado en una sesión
 **Líneas de código**: ~5,900+ líneas
 **Cobertura**: Backend + Frontend + Tests + Documentación
+
+---
+
+## 🧾 Integración de Billing con Paddle (Sandbox)
+
+### Variables de Entorno
+
+Frontend (`frontend/.env`):
+
+```
+VITE_PADDLE_ENV=sandbox
+VITE_PADDLE_CLIENT_TOKEN=ptk_...
+
+VITE_PRICE_BASIC_MONTH=pri_01k5wq6b65vmkve97p0btjfr5x
+VITE_PRICE_BASIC_YEAR=pri_01k5wqbb5bwz3ezmqd7dp7y2ef
+VITE_PRICE_PRO_MONTH=pri_01k5wr9nmmcb5w7j1c4ss6rf47
+VITE_PRICE_PRO_YEAR=pri_01k5wrcmwnktar6q34vx5w5ppb
+VITE_PRICE_ULTRA_MONTH=pri_01k5xvtqxsy26ga7ve67ee8dae
+VITE_PRICE_ULTRA_YEAR=pri_01k5xvx9y01d1dy90e907ftk8h
+```
+
+Backend (`node-auth/.env`):
+
+```
+PORT=4000
+PADDLE_API_KEY=psk_...
+PADDLE_WEBHOOK_SECRET=whsec_...
+SUPABASE_URL=https://<project>.supabase.co
+SUPABASE_SERVICE_ROLE=eyJ...
+CORS_ORIGIN=http://localhost:5173
+```
+
+En Dashboard de Paddle → Checkout settings: Default payment link = `https://localhost/` (dev).
+
+### Cambios Clave ya implementados
+
+- Script Paddle añadido en `frontend/index.html`.
+- Lib `frontend/src/lib/paddle.ts` con `initPaddle` y `openCheckout`.
+- CTA de `frontend/src/pages/Pricing.tsx` abren Paddle Checkout según `VITE_PRICE_*`.
+- Webhook `POST /api/webhooks/paddle` en `node-auth/server.ts` con verificación HMAC y sincronización a `public.user_profiles`.
+- Migración SQL en `migrations/2025-09-24_add_paddle_columns.sql`.
+- Templates de entorno: `frontend/env.example` y `node-auth/env.example`.
+
+### Pruebas E2E (Sandbox)
+
+1. Loguéate y visita `/pricing`.
+2. Elige plan y periodo; clic en “Suscribirse” → se abre Paddle.
+3. Usa tarjeta test 4242 4242 4242 4242 / CVC 100 / fecha futura / ZIP válido.
+4. Verifica en DB: `plan`, `billing_period`, `status='active'`, `plan_renews_at`, `price_id`, `paddle_*`.
+5. Cancela en Paddle y confirma acceso hasta `plan_renews_at`.
+
+### Pasar a Live
+
+- Cambiar `VITE_PADDLE_ENV=production` y usar Client Token de producción.
+- Reemplazar `PADDLE_API_KEY` y `PADDLE_WEBHOOK_SECRET` por claves de producción.
+- Ajustar Checkout settings: Default payment link al dominio real.
+- Verificar dominio para Apple Pay si aplica.
+- Re-ejecutar pruebas con precios live.

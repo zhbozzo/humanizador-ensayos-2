@@ -98,6 +98,20 @@ humanizador-ensayos/
    
    La aplicación estará disponible en: http://localhost:5173
 
+### Billing con Paddle (Sandbox)
+
+1. Copia `frontend/env.example` a `frontend/.env` y rellena `VITE_PADDLE_CLIENT_TOKEN` y precios `VITE_PRICE_*`.
+2. Copia `node-auth/env.example` a `node-auth/.env` y rellena `PADDLE_API_KEY`, `PADDLE_WEBHOOK_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE`.
+3. En Paddle Dashboard → Checkout settings: define `Default payment link = https://localhost/`.
+4. Arranca el backend Node Auth:
+   ```bash
+   cd node-auth
+   npm run dev
+   ```
+5. En `/pricing`, pulsa “Suscribirse” y completa un pago de prueba. Verifica que `user_profiles` refleja `status`, `plan`, `billing_period`, `plan_renews_at`, `price_id`, `paddle_*`.
+
+Para ir a producción: cambia `VITE_PADDLE_ENV=production`, usa tokens/secretos de live y actualiza el Default payment link al dominio real.
+
 ## 📖 Uso
 
 ### Interfaz de Usuario

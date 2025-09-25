@@ -33,12 +33,13 @@ class EntityExtractor:
             # URLs and DOIs
             'urls': r'https?://[^\s]+|doi:[^\s]+',
             
-            # Proper names (capitalized words, especially in Spanish context)
-            'proper_names': r'\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*\b',
+            # Proper names (temporarily disabled to prevent over-extraction)
+            # 'proper_names': r'\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*\b',
         }
         
-        # Combined pattern for efficiency
-        self.combined_pattern = '|'.join(f'({pattern})' for pattern in self.patterns.values())
+        # Combined pattern for efficiency (exclude None values)
+        active_patterns = [pattern for pattern in self.patterns.values() if pattern is not None]
+        self.combined_pattern = '|'.join(f'({pattern})' for pattern in active_patterns)
         self.entity_placeholders = {}
     
     def extract_and_freeze(self, text: str) -> Tuple[List[str], str]:
@@ -64,8 +65,8 @@ class EntityExtractor:
         for match in matches:
             entity = match.group().strip()
             
-            # Skip if it's just a single common word (to avoid over-preservation)
-            if self._is_common_word(entity):
+            # Skip if it's just a single common word or common phrase
+            if self._is_common_word(entity) or self._is_common_phrase(entity):
                 continue
             
             # Generate unique placeholder
@@ -144,10 +145,35 @@ class EntityExtractor:
             'Que', 'Quien', 'Como', 'Cuando', 'Donde', 'Porque', 'Si', 'No', 'Muy', 'Más', 'Menos',
             'Todo', 'Toda', 'Todos', 'Todas', 'Otro', 'Otra', 'Otros', 'Otras', 'Mismo', 'Misma',
             'También', 'Solo', 'Sólo', 'Así', 'Aquí', 'Allí', 'Ahí', 'Ahora', 'Antes', 'Después',
-            'Durante', 'Mientras', 'Según', 'Sin', 'Sobre', 'Entre', 'Hacia', 'Hasta', 'Desde'
+            'Durante', 'Mientras', 'Según', 'Sin', 'Sobre', 'Entre', 'Hacia', 'Hasta', 'Desde',
+            # Common words that might be capitalized at sentence start
+            'Texto', 'Prueba', 'Ejemplo', 'Caso', 'Resultado', 'Conclusión', 'Introducción',
+            'Desarrollo', 'Análisis', 'Estudio', 'Investigación', 'Método', 'Proceso', 'Sistema',
+            'Educación', 'Salud', 'Programas', 'Campaña', 'Información', 'Recursos', 'Acceso',
+            'Menstruación', 'Niñas', 'Familias', 'Gobiernos', 'Sociedad', 'Respeto', 'Igualdad'
         }
         
         return word in common_words
+    
+    def _is_common_phrase(self, phrase: str) -> bool:
+        """
+        Check if a phrase is a common expression that shouldn't be preserved.
+        
+        Args:
+            phrase: Phrase to check
+            
+        Returns:
+            True if it's a common phrase that can be modified
+        """
+        phrase_lower = phrase.lower()
+        common_phrases = {
+            'texto de prueba', 'texto de ejemplo', 'por ejemplo',
+            'en conclusión', 'en resumen', 'por tanto', 'sin embargo',
+            'de igual manera', 'de este modo', 'en este sentido',
+            'según el estudio', 'de acuerdo con', 'por otra parte'
+        }
+        
+        return phrase_lower in common_phrases
     
     def get_entity_stats(self, frozen_entities: List[str]) -> Dict[str, int]:
         """

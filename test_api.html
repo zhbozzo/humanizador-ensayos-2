@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API</title>
+</head>
+<body>
+    <h1>Test de API</h1>
+    <button onclick="testAPI()">Probar API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Probando...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/humanize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: "La educación es fundamental para el desarrollo.",
+                        budget: 0.5,
+                        preserve_entities: true,
+                        respect_style: false
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <h3>Éxito!</h3>
+                    <p><strong>Original:</strong> La educación es fundamental para el desarrollo.</p>
+                    <p><strong>Humanizado:</strong> ${data.result}</p>
+                    <p><strong>Ratio de cambio:</strong> ${data.metrics.change_ratio}</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<h3>Error:</h3><p style="color: red;">${error.message}</p>`;
+                console.error('Error completo:', error);
+            }
+        }
+    </script>
+</body>
+</html>
