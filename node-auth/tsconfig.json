@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
+    "target": "ES2019",
+    "module": "commonjs",
     "outDir": "dist",
-    "target": "ES2020",
-    "module": "CommonJS",
-    "esModuleInterop": true,
     "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["server.ts", "**/*.ts"]
+  "include": ["server.ts"]
 }
