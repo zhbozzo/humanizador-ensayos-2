@@ -16,7 +16,7 @@ import { useGoogleOneTap } from './lib/useGoogleOneTap';
 import History from './pages/History';
 
 function App() {
-  const [page, setPage] = useState<'home'|'login'|'profile'|'humanize'|'pricing'|'terms'|'privacy'|'refunds'|'faq'>('home');
+  const [page, setPage] = useState<'home'|'login'|'profile'|'humanize'|'pricing'|'terms'|'privacy'|'refunds'|'faq'|'history'>('home');
   const [locale, setLocaleState] = useState<Locale>(detectLocale());
   const [authMode, setAuthMode] = useState<'login'|'signup'>('login');
   const [recovering, setRecovering] = useState<boolean>(false);
@@ -32,14 +32,14 @@ function App() {
     // soportar fragmentos compuestos: login#access_token=..., login?access_token=...
     const front = raw.split('#')[0].split('?')[0].split('&')[0];
     const stored = localStorage.getItem('page') as any;
-    const candidate = (front || stored) as 'home'|'login'|'profile'|'humanize'|'pricing'|'terms'|'privacy'|'refunds'|'faq'|undefined;
+    const candidate = (front || stored) as 'home'|'login'|'profile'|'humanize'|'pricing'|'terms'|'privacy'|'refunds'|'faq'|'history'|undefined;
     if (hasRecovery) {
       setAuthMode('login');
       setRecovering(true);
       setPage('login');
       return;
     }
-    if (candidate && ['home','login','profile','humanize','pricing'].includes(candidate)) {
+    if (candidate && ['home','login','profile','humanize','pricing','history','terms','privacy','refunds','faq'].includes(candidate)) {
       setPage(candidate);
     }
   }, []);
