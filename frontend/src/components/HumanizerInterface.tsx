@@ -6,18 +6,9 @@ import { useProfileSummary } from '../lib/useProfileSummary';
 import { useSession } from '../lib/useSession';
 import { supabase } from '../lib/supabaseClient';
 import { detectLocale, type Locale } from '../lib/i18n';
+import type { HumanizeRequest } from '../types';
 
-interface HumanizeRequest {
-  text: string;
-  budget: number;
-  preserve_entities: boolean;
-  respect_style: boolean;
-  style_sample: string | null;
-  level?: string;
-  voice?: string;
-  plan?: 'free'|'basic'|'pro'|'ultra';
-  max_words?: number;
-}
+// Usamos HumanizeRequest del barrel `../types` para evitar duplicidad de tipos
 
 const HumanizerInterface: React.FC = () => {
   const [text, setText] = useState('');
