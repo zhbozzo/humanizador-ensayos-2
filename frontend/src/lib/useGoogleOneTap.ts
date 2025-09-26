@@ -12,6 +12,7 @@ export function useGoogleOneTap(onLoggedIn?: () => void) {
 
   useEffect(() => {
     if (user) return; // No mostrar si ya hay sesión
+    if (typeof window !== 'undefined' && !window.location.hostname.endsWith('humaniza.ai')) return;
     const CLIENT_ID: string = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
     try { console.debug('[one-tap] VITE_GOOGLE_CLIENT_ID present:', !!CLIENT_ID); } catch {}
     if (!CLIENT_ID || initialized.current) return;

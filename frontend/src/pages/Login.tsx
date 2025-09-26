@@ -137,7 +137,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin }
+          options: { emailRedirectTo: "https://humaniza.ai" }
         } as any);
         if (error) {
           const msg = (error as any)?.message || '';
@@ -187,7 +187,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
         // Fallback a OAuth clásico de Supabase si no hay CLIENT_ID
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
-          options: { redirectTo: window.location.origin + '#login' },
+          options: { redirectTo: 'https://humaniza.ai#login' },
         });
         if (error) setErr(error.message);
         return;
@@ -226,9 +226,9 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
       } catch (e:any) {
         // Si GIS falla, intentar fallback OAuth de Supabase
         try {
-          const { error } = await supabase.auth.signInWithOAuth({
+        const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: window.location.origin + '#login' },
+          options: { redirectTo: 'https://humaniza.ai#login' },
           });
           if (error) setErr(error.message);
         } catch (e2:any) {
@@ -239,7 +239,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
     }
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin + '#login' },
+      options: { redirectTo: 'https://humaniza.ai#login' },
     });
     if (error) setErr(error.message);
   };

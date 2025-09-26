@@ -1,0 +1,4 @@
+# Apple Developer Domain Association
+# Reemplaza el contenido de este archivo con el texto EXACTO provisto por Apple Developer.
+# Debe publicarse en:
+# https://humaniza.ai/.well-known/apple-developer-domain-association.txt
