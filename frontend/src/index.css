@@ -67,3 +67,9 @@
     radial-gradient(1200px 680px at 30% 120%, rgba(0,123,255,0.10), transparent),
     linear-gradient(180deg, #ffffff 0%, #fbfdff 30%, #f3faff 60%, #e8f6ff 100%);
 }
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}

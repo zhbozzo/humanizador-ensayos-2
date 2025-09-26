@@ -214,15 +214,15 @@ function App() {
           {/* Mobile dropdown */}
           {mobileOpen && (
             <div className="md:hidden absolute left-0 right-0 top-full bg-neutral-900 border-t border-neutral-800 shadow-xl z-40">
-              <div className="px-3 py-3 grid gap-2 text-sm">
-                <button onClick={()=>{ navigate('/'); setPage('home'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800">{t('nav_humanize', locale)}</button>
-                <button onClick={()=>{ navigate('/'); setPage('pricing'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800">{t('nav_pricing', locale)}</button>
+              <div className="px-3 py-3 grid gap-2 text-sm text-gray-200">
+                <button onClick={()=>{ navigate('/'); setPage('home'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800 hover:text-white">{t('nav_humanize', locale)}</button>
+                <button onClick={()=>{ navigate('/'); setPage('pricing'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800 hover:text-white">{t('nav_pricing', locale)}</button>
                 {user && (
-                  <button onClick={()=>{ navigate('/'); setPage('history'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800">{t('nav_history', locale)}</button>
+                  <button onClick={()=>{ navigate('/'); setPage('history'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800 hover:text-white">{t('nav_history', locale)}</button>
                 )}
                 {!user ? (
                   <>
-                    <button onClick={()=>{ navigate('/'); setAuthMode('login'); setPage('login'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800">{t('nav_login', locale)}</button>
+                    <button onClick={()=>{ navigate('/'); setAuthMode('login'); setPage('login'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800 hover:text-white">{t('nav_login', locale)}</button>
                     <button onClick={()=>{ navigate('/'); setAuthMode('signup'); setPage('login'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md btn-brand text-white">{t('nav_try_free', locale)}</button>
                   </>
                 ) : (
@@ -231,7 +231,7 @@ function App() {
                       <span>{locale==='es' ? 'Balance' : 'Balance'}</span>
                       <span className="font-semibold">{displayBalance !== null ? displayBalance : (loadingSummary ? '…' : (summary?.words_balance ?? '—'))}</span>
                     </div>
-                    <button onClick={()=>{ navigate('/'); setPage('profile'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800">{locale==='es' ? 'Perfil' : 'Profile'}</button>
+                    <button onClick={()=>{ navigate('/'); setPage('profile'); setMobileOpen(false); }} className="text-left px-3 py-2 rounded-md hover:bg-neutral-800 hover:text-white">{locale==='es' ? 'Perfil' : 'Profile'}</button>
                   </>
                 )}
                 <div className="px-3 pt-2">
@@ -265,8 +265,8 @@ function App() {
             {page==='home' && (
               <div className="text-center mb-8">
                 <div className="inline-flex items-center justify-center gap-2 mb-2">
-                  <img src="/logohuman.png" alt="logo" className="w-40 h-40 sm:w-64 sm:h-64 object-contain" onError={(e:any)=>{try{e.currentTarget.src='/Logohuman.png';}catch{}}} />
-                  <h1 className="text-5xl md:text-7xl font-extrabold text-brand-gradient">humaniza.ai</h1>
+                  <img src="/logohuman.png" alt="logo" className="w-28 h-28 sm:w-64 sm:h-64 object-contain" onError={(e:any)=>{try{e.currentTarget.src='/Logohuman.png';}catch{}}} />
+                  <h1 className="text-4xl md:text-7xl font-extrabold text-brand-gradient">humaniza.ai</h1>
                 </div>
                 <div className="block w-fit mx-auto px-5 py-2 rounded-full animated-bg text-white text-sm font-semibold shadow-md mb-3">{locale==='es' ? 'CONFIAN EN NOSOTROS 100.000+ USUARIOS' : 'TRUSTED BY 100,000+ USERS'}</div>
                 <p className="text-gray-700 max-w-2xl mx-auto mb-5">{locale==='es' ? 'Hecho para dar un toque más humano a tu texto y bypassear detectores de IA.' : 'Made to give your text a more human touch and bypass AI detectors.'}</p>
