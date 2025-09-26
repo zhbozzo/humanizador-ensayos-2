@@ -57,6 +57,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
             auto_select: false,
             cancel_on_tap_outside: false,
             itp_support: true,
+            use_fedcm_for_prompt: true,
             callback: async (response: any) => {
               try {
                 if (response?.credential) {
@@ -68,7 +69,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
             context: 'signin',
           });
           // @ts-ignore
-          window.google.accounts.id.prompt((notice:any)=>{ console.debug('OneTap:', notice); });
+          window.google.accounts.id.prompt((notice:any)=>{ try { console.debug('OneTap:', notice); } catch {} });
           // Render botón One Tap en esquina superior derecha
           const tap = document.createElement('div');
           tap.style.position = 'fixed';
@@ -137,7 +138,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: "https://humaniza.ai" }
+          options: { emailRedirectTo: (typeof window !== 'undefined' ? window.location.origin : 'https://humaniza.ai') + '#login' }
         } as any);
         if (error) {
           const msg = (error as any)?.message || '';

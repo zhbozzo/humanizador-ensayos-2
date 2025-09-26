@@ -273,13 +273,13 @@ function App() {
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={()=>{
-                      const el = document.getElementById('humanizer-section');
-                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      setPage('home');
+                      navigate('/');
+                      setAuthMode('signup');
+                      setPage('login');
                     }}
                     className="px-6 py-3 rounded-xl btn-brand text-base font-semibold shadow-lg"
                   >{locale==='es' ? 'Probar gratis' : 'Try for free'}</button>
-                  <button onClick={()=>setPage('pricing')} className="px-6 py-3 rounded-xl border border-transparent bg-white/70 hover:bg-white text-gray-700 shadow">
+                  <button onClick={()=>{ navigate('/'); setPage('pricing'); }} className="px-6 py-3 rounded-xl border border-transparent bg-white/70 hover:bg-white text-gray-700 shadow">
                     {locale==='es' ? 'Ver planes' : 'View plans'}
                   </button>
                 </div>
