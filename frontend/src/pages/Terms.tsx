@@ -94,7 +94,7 @@ export default function Terms() {
         <p>Podemos supervisar y restringir el acceso para proteger a los usuarios y la plataforma.</p>
 
         <h2 id="privacidad" className="uppercase tracking-wide font-extrabold">{locale==='es' ? '12. PRIVACIDAD' : '12. PRIVACY'}</h2>
-        <p>Consulta nuestra <a href="#privacy">Política de Privacidad</a> para saber cómo tratamos tus datos. Los pagos se gestionan con <strong>Paddle</strong>; no almacenamos datos completos de tarjeta.</p>
+        <p>Consulta nuestra <a href="/privacy">Política de Privacidad</a> para saber cómo tratamos tus datos. Los pagos se gestionan con <strong>Paddle</strong>; no almacenamos datos completos de tarjeta.</p>
 
         <h2 id="copyright" className="uppercase tracking-wide font-extrabold">{locale==='es' ? '13. DERECHOS DE AUTOR' : '13. COPYRIGHT'}</h2>
         <p>Si crees que algún material infringe derechos, escribe a <a href="mailto:contacto@humaniza.ai">contacto@humaniza.ai</a> con detalles suficientes.</p>
@@ -115,7 +115,7 @@ export default function Terms() {
         <p>Nos indemnizarás frente a reclamaciones derivadas de tu uso indebido de los Servicios o del incumplimiento de estos Términos.</p>
 
         <h2 id="reembolsos" className="uppercase tracking-wide font-extrabold">{locale==='es' ? '19. REEMBOLSOS' : '19. REFUNDS'}</h2>
-        <p>Consulta la <a href="#refunds">Política de Reembolsos</a>. No se realizan reembolsos cuando se haya consumido el 25% o más de los créditos del plan.</p>
+        <p>Consulta la <a href="/refunds">Política de Reembolsos</a>. No se realizan reembolsos cuando se haya consumido el 25% o más de los créditos del plan.</p>
 
         <h2 id="contacto" className="uppercase tracking-wide font-extrabold">{locale==='es' ? '20. CONTACTO' : '20. CONTACT'}</h2>
         <p>{locale==='es' ? 'Correo' : 'Email'}: <a href="mailto:contacto@humaniza.ai">contacto@humaniza.ai</a></p>

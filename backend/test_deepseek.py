@@ -39,7 +39,7 @@ async def test_deepseek():
                 }
             ],
             temperature=0.7,
-            max_tokens=100,
+            max_tokens=10000,
             response_format={"type": "json_object"}
         )
         

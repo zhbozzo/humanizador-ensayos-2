@@ -15,7 +15,7 @@ async def test_deepseek_reasoner():
     # Obtener API key
     api_key = os.getenv("DEEPSEEK_API_KEY")
     
-    if not api_key or api_key == "TU_API_KEY_AQUI":
+    if not api_key or api_key == "sk-f50fcdbbea8c499cb9f72124754391f4":
         print("❌ ERROR: No hay API key de DeepSeek configurada")
         print("Por favor, edita el archivo .env y agrega tu DEEPSEEK_API_KEY")
         return False
@@ -53,7 +53,7 @@ async def test_deepseek_reasoner():
                 }
             ],
             temperature=0.85,
-            max_tokens=1000
+            max_tokens=10000
         )
         
         result = response.choices[0].message.content
@@ -90,4 +90,4 @@ if __name__ == "__main__":
         print("\nPasos para solucionarlo:")
         print("1. Ve a https://platform.deepseek.com/")
         print("2. Obtén tu API key")
-        print("3. Edita backend/.env y agrega: DEEPSEEK_API_KEY=tu_api_key_real")
+        print("3. Edita backend/.env y agrega: DEEPSEEK_API_KEY=sk-f50fcdbbea8c499cb9f72124754391f4")

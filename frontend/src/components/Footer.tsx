@@ -23,11 +23,11 @@ export default function Footer() {
           <ul className="space-y-1">
             <li><a href="mailto:contacto@humaniza.ai" className="hover:underline">contacto@humaniza.ai</a></li>
             <li className="flex flex-wrap gap-2">
-              <a href="#privacy" className="hover:underline">{t('footer_privacy', locale)}</a>
+              <a href="/privacy" className="hover:underline">{t('footer_privacy', locale)}</a>
               <span>·</span>
-              <a href="#terms" className="hover:underline">{t('footer_terms', locale)}</a>
+              <a href="/terms" className="hover:underline">{t('footer_terms', locale)}</a>
               <span>·</span>
-              <a href="#refunds" className="hover:underline">{t('footer_refunds', locale)}</a>
+              <a href="/refunds" className="hover:underline">{t('footer_refunds', locale)}</a>
             </li>
           </ul>
         </div>

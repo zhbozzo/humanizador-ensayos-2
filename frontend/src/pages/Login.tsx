@@ -459,6 +459,20 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
         </div>
         )}
 
+        {mode==='signup' && (
+        <div className="mt-3 text-center text-[11px] text-gray-500">
+          {locale==='es' ? (
+            <>
+              Al crear una cuenta, aceptas nuestros <a href="/terms" className="underline hover:text-cyan-600">Términos y Condiciones</a> y <a href="/privacy" className="underline hover:text-cyan-600">Política de Privacidad</a>.
+            </>
+          ) : (
+            <>
+              By creating an account, you agree to our <a href="/terms" className="underline hover:text-cyan-600">Terms of Service</a> and <a href="/privacy" className="underline hover:text-cyan-600">Privacy Policy</a>.
+            </>
+          )}
+        </div>
+        )}
+
         <div className="mt-5 text-center text-sm text-gray-600">
           {mode === "login" && (
             <div className="grid gap-2">
