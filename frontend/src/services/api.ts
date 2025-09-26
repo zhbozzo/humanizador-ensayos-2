@@ -5,7 +5,7 @@ import type {
   DetectResponse 
 } from '../types';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = (import.meta as any).env?.VITE_BACKEND_URL || 'https://api.humaniza.ai';
 
 interface ProgressUpdate {
   progress?: number;
