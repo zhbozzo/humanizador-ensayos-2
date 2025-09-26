@@ -6,8 +6,16 @@ declare const __VITE_SUPABASE_URL__: string;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare const __VITE_SUPABASE_ANON__: string;
 
-const url = (import.meta as any).env?.VITE_SUPABASE_URL || (typeof __VITE_SUPABASE_URL__ !== 'undefined' ? __VITE_SUPABASE_URL__ : undefined);
-const anon = (import.meta as any).env?.VITE_SUPABASE_ANON || (typeof __VITE_SUPABASE_ANON__ !== 'undefined' ? __VITE_SUPABASE_ANON__ : undefined);
+// Admitir variables con prefijo VITE_ (Vite) y NEXT_PUBLIC_ (Supabase-Vercel integration)
+const rawUrl = (import.meta as any).env?.VITE_SUPABASE_URL
+  || (import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL
+  || (typeof __VITE_SUPABASE_URL__ !== 'undefined' ? __VITE_SUPABASE_URL__ : undefined);
+const rawAnon = (import.meta as any).env?.VITE_SUPABASE_ANON
+  || (import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  || (typeof __VITE_SUPABASE_ANON__ !== 'undefined' ? __VITE_SUPABASE_ANON__ : undefined);
+
+const url = typeof rawUrl === 'string' ? rawUrl.trim() : rawUrl;
+const anon = typeof rawAnon === 'string' ? rawAnon.trim() : rawAnon;
 
 if (!url || !anon) {
   // eslint-disable-next-line no-console
