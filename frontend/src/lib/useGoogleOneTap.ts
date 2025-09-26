@@ -12,9 +12,13 @@ export function useGoogleOneTap(onLoggedIn?: () => void) {
 
   useEffect(() => {
     if (user) return; // No mostrar si ya hay sesión
+    // Evitar interferir en la pantalla de login/signup, donde usamos formularios
+    try {
+      const h = (window.location.hash || '').toLowerCase();
+      if (h.includes('login') || h.includes('signup')) return;
+    } catch {}
     if (typeof window !== 'undefined' && !window.location.hostname.endsWith('humaniza.ai')) return;
     const CLIENT_ID: string = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
-    try { console.debug('[one-tap] VITE_GOOGLE_CLIENT_ID present:', !!CLIENT_ID); } catch {}
     if (!CLIENT_ID || initialized.current) return;
     initialized.current = true;
 
@@ -31,6 +35,7 @@ export function useGoogleOneTap(onLoggedIn?: () => void) {
             auto_select: false,
             cancel_on_tap_outside: false,
             itp_support: true,
+            use_fedcm_for_prompt: true,
             callback: async (response: any) => {
               try {
                 if (response?.credential) {
@@ -42,7 +47,7 @@ export function useGoogleOneTap(onLoggedIn?: () => void) {
           });
           // One Tap overlay (Google decide posición; típicamente arriba a la derecha)
           // @ts-ignore
-          window.google.accounts.id.prompt((n: any) => { console.debug('OneTap notice', n); });
+          window.google.accounts.id.prompt((n: any) => { try { /* silenciar */ } catch {} });
         }
       } catch {}
     };
