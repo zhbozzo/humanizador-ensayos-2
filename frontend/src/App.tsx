@@ -126,10 +126,10 @@ function App() {
     <div className="min-h-screen app-bg">
       {/* Nav */}
       <header className="border-b border-neutral-800 bg-neutral-900 shadow-sm">
-        <div className="container mx-auto px-4 py-1.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/logohuman.png" alt="logo" className="w-10 h-10 rounded-md" onError={(e:any)=>{try{e.currentTarget.src='/Logohuman.png';}catch{}}} />
-            <button className="font-extrabold text-brand-gradient text-xl" onClick={()=>setPage('home')}>humaniza.ai</button>
+        <div className="container mx-auto px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <img src="/logohuman.png" alt="logo" className="w-8 h-8 sm:w-10 sm:h-10 rounded-md object-contain" onError={(e:any)=>{try{e.currentTarget.src='/Logohuman.png';}catch{}}} />
+            <button className="font-extrabold text-brand-gradient text-lg sm:text-xl" onClick={()=>setPage('home')}>humaniza.ai</button>
           </div>
           <nav className="hidden md:flex items-center gap-3 text-sm">
             <button
@@ -153,7 +153,7 @@ function App() {
               </button>
             )}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {!user ? (
               <>
                 <button onClick={()=>{ setAuthMode('login'); setPage('login'); }} className="text-sm text-gray-200 hover:text-white">{t('nav_login', locale)}</button>
@@ -197,8 +197,8 @@ function App() {
         {page==='home' && (
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center gap-2 mb-2">
-              <img src="/logohuman.png" alt="logo" className="w-64 h-64" onError={(e:any)=>{try{e.currentTarget.src='/Logohuman.png';}catch{}}} />
-              <h1 className="text-6xl md:text-7xl font-extrabold text-brand-gradient">humaniza.ai</h1>
+              <img src="/logohuman.png" alt="logo" className="w-40 h-40 sm:w-64 sm:h-64 object-contain" onError={(e:any)=>{try{e.currentTarget.src='/Logohuman.png';}catch{}}} />
+              <h1 className="text-5xl md:text-7xl font-extrabold text-brand-gradient">humaniza.ai</h1>
             </div>
             <div className="block w-fit mx-auto px-5 py-2 rounded-full animated-bg text-white text-sm font-semibold shadow-md mb-3">{locale==='es' ? 'CONFIAN EN NOSOTROS 100.000+ USUARIOS' : 'TRUSTED BY 100,000+ USERS'}</div>
             <p className="text-gray-700 max-w-2xl mx-auto mb-5">{locale==='es' ? 'Hecho para dar un toque más humano a tu texto y bypassear detectores de IA.' : 'Made to give your text a more human touch and bypass AI detectors.'}</p>
