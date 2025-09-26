@@ -165,6 +165,9 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
           if (/Invalid login credentials/i.test(msg)) {
             throw new Error(locale==='es' ? 'Credenciales inválidas' : 'Invalid login credentials');
           }
+          if (/name.*not.*resolved|fetch/i.test(msg)) {
+            throw new Error(locale==='es' ? 'No se pudo contactar con el servidor. Reintenta en unos segundos.' : 'Could not reach the server. Please retry in a few seconds.');
+          }
           if (/confirm.*email|not.*confirmed/i.test(msg)) {
             throw new Error(locale==='es' ? 'Confirma tu correo para iniciar sesión.' : 'Please confirm your email before logging in.');
           }
