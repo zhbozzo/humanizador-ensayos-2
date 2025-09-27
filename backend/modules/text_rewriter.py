@@ -404,22 +404,29 @@ RECORDATORIOS CRÍTICOS
                         max_tokens=self._clamp_max_tokens(8192),
                         stream=True
                     )
-                    async for event in stream:
-                        try:
-                            choice = event.choices[0]
-                            delta = getattr(choice, "delta", None)
-                            content = getattr(delta, "content", None) if delta is not None else None
-                            if content:
-                                raw += content
-                                partial_preview = self._extract_rewritten_from_partial(raw)
-                                if token_callback and partial_preview:
-                                    await token_callback(
-                                        len(partial_preview.split()),
-                                        max(80, int(len(text.split()) * 1.4)),
-                                        partial_preview
-                                    )
-                        except Exception:
-                            pass
+                    # Timeout suave de 25s para no quedar colgados
+                    async def _consume():
+                        nonlocal raw
+                        async for event in stream:
+                            try:
+                                choice = event.choices[0]
+                                delta = getattr(choice, "delta", None)
+                                content = getattr(delta, "content", None) if delta is not None else None
+                                if content:
+                                    raw += content
+                                    partial_preview = self._extract_rewritten_from_partial(raw)
+                                    if token_callback and partial_preview:
+                                        await token_callback(
+                                            len(partial_preview.split()),
+                                            max(80, int(len(text.split()) * 1.4)),
+                                            partial_preview
+                                        )
+                            except Exception:
+                                pass
+                    try:
+                        await asyncio.wait_for(_consume(), timeout=25)
+                    except asyncio.TimeoutError:
+                        pass
                 except Exception:
                     raw = ""
             if not raw:

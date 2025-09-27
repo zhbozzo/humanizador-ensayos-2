@@ -108,6 +108,10 @@ class HumanizeResponse(BaseModel):
 async def root():
     return {"message": "Humanizador de Ensayos API v1.0.0"}
 
+@app.get("/robots.txt")
+async def robots_txt():
+    return JSONResponse(content="User-agent: *\nDisallow:", media_type="text/plain")
+
 
 @app.get("/health")
 async def health_check():
