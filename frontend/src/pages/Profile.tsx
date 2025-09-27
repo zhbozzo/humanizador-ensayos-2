@@ -13,8 +13,10 @@ type ProfileRow = {
 export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
   const { user, token, loading } = useSession();
   const [profile, setProfile] = useState<ProfileRow | null>(null);
-  const [busy] = useState(false);
-  const [error] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [editingEmail, setEditingEmail] = useState(false);
+  const [contactEmail, setContactEmail] = useState('');
   const locale = detectLocale();
   // const API = (import.meta as any).env.VITE_NODE_AUTH_URL || 'http://localhost:4000';
 
@@ -25,6 +27,8 @@ export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
       .select("plan,words_balance,next_reset_at,email")
       .single();
     if (!error) setProfile(data as ProfileRow);
+    const fallback = (user as any)?.user_metadata?.email || user.email || '';
+    setContactEmail(((data as any)?.email as string) || fallback);
   };
 
   useEffect(() => {
@@ -47,6 +51,8 @@ export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
 
   if (loading) return <div className="text-center py-12 text-gray-600">Cargando…</div>;
   if (!user) return null;
+  const provider = (user as any)?.app_metadata?.provider as 'apple'|'google'|'email'|undefined;
+  const providerLabel = provider === 'apple' ? 'Apple' : provider === 'google' ? 'Google' : provider === 'email' ? (locale==='es' ? 'Email' : 'Email') : undefined;
 
   return (
     <div className="max-w-5xl mx-auto py-6 animate-fade-up">
@@ -58,8 +64,51 @@ export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5 flex items-start justify-between card-appear">
         <div className="space-y-2">
           <div className="text-sm text-gray-500">{locale==='es' ? 'Cuenta' : 'Account'}</div>
-          <div className="text-lg font-semibold text-gray-900">{user.user_metadata?.name || user.email}</div>
-          <div className="text-sm text-gray-500">{user.email}</div>
+          <div className="flex items-center gap-2">
+            <div className="text-lg font-semibold text-gray-900">{user.user_metadata?.name || user.email}</div>
+            {providerLabel && (
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">{providerLabel}</span>
+            )}
+          </div>
+          <div className="text-sm text-gray-500 flex items-center gap-2">
+            <span>{contactEmail}</span>
+            {!editingEmail && (
+              <button onClick={()=>setEditingEmail(true)} className="text-xs underline text-cyan-600 hover:opacity-80">{locale==='es' ? 'Editar' : 'Edit'}</button>
+            )}
+          </div>
+          {editingEmail && (
+            <form className="flex items-center gap-2 mt-1" onSubmit={async (e)=>{
+              e.preventDefault();
+              try {
+                setBusy(true); setError(null);
+                const email = contactEmail.trim();
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error(locale==='es' ? 'Email inválido' : 'Invalid email');
+                const { error } = await supabase
+                  .from('user_profiles')
+                  .upsert({ user_id: user.id, email }, { onConflict: 'user_id' });
+                if (error) throw error;
+                setEditingEmail(false);
+              } catch (e:any) {
+                setError(e?.message || 'Error');
+              } finally {
+                setBusy(false);
+              }
+            }}>
+              <input
+                value={contactEmail}
+                onChange={(e)=>setContactEmail(e.target.value)}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                placeholder="you@email.com"
+              />
+              <button disabled={busy} className="text-xs px-2 py-1 rounded bg-cyan-600 text-white disabled:opacity-60">{locale==='es' ? 'Guardar' : 'Save'}</button>
+              <button type="button" onClick={()=>{ setEditingEmail(false); setContactEmail(profile?.email || user.email || ''); }} className="text-xs px-2 py-1 rounded border border-gray-300 text-gray-700">{locale==='es' ? 'Cancelar' : 'Cancel'}</button>
+            </form>
+          )}
+          {provider === 'apple' && user.email?.endsWith('@privaterelay.appleid.com') && !editingEmail && (
+            <div className="text-xs text-amber-600 mt-1">
+              {locale==='es' ? 'Apple puede ocultar tu correo real. Puedes fijar aquí un correo de contacto.' : 'Apple may hide your real email. You can set a contact email here.'}
+            </div>
+          )}
         </div>
         <button onClick={() => { logout(); window.location.hash=''; }} className="text-sm text-red-500 hover:text-red-600">Cerrar sesión</button>
       </div>

@@ -10,6 +10,21 @@ export function useGoogleOneTap(onLoggedIn?: () => void) {
   const { user } = useSession();
   const initialized = useRef(false);
 
+  // Si aparece sesión, cancela/oculta cualquier prompt activo de Google
+  useEffect(() => {
+    if (user) {
+      try {
+        // @ts-ignore
+        if (window.google?.accounts?.id?.cancel) {
+          // @ts-ignore
+          window.google.accounts.id.cancel();
+        }
+        const el = document.getElementById('g_id_onload');
+        if (el && el.parentElement) el.parentElement.removeChild(el);
+      } catch {}
+    }
+  }, [user]);
+
   useEffect(() => {
     const DISABLE = (((import.meta as any).env?.VITE_DISABLE_ONE_TAP) ?? 'true') === 'true' || (((import.meta as any).env?.VITE_GOOGLE_USE_GIS) !== 'true');
     if (DISABLE) return;
