@@ -162,7 +162,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
           const msg = (error as any)?.message || '';
-          if (/Invalid login credentials/i.test(msg)) {
+          if (/Invalid login credentials/i.test(msg) || /invalid.*grant/i.test(msg)) {
             throw new Error(locale==='es' ? 'Credenciales inválidas' : 'Invalid login credentials');
           }
           if (/name.*not.*resolved|fetch/i.test(msg)) {
@@ -187,9 +187,10 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
       const CLIENT_ID = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID || '';
       // Debug mínimo para verificar carga de env
       try { console.debug('[login] VITE_GOOGLE_CLIENT_ID present:', !!CLIENT_ID); } catch {}
-      // Sólo usar GIS/FedCM en producción (humaniza.ai). En previews usa OAuth clásico.
+      // Usar GIS sólo si está habilitado por env y en dominio prod
       const isProdHost = (typeof window !== 'undefined') && window.location.hostname.endsWith('humaniza.ai');
-      if (!CLIENT_ID || !isProdHost) {
+      const USE_GIS = ((import.meta as any).env?.VITE_GOOGLE_USE_GIS === 'true') && isProdHost && !!CLIENT_ID;
+      if (!USE_GIS) {
         // Fallback a OAuth clásico de Supabase si no hay CLIENT_ID
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',

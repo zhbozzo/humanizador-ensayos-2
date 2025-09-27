@@ -11,6 +11,8 @@ export function useGoogleOneTap(onLoggedIn?: () => void) {
   const initialized = useRef(false);
 
   useEffect(() => {
+    const DISABLE = (((import.meta as any).env?.VITE_DISABLE_ONE_TAP) ?? 'true') === 'true' || (((import.meta as any).env?.VITE_GOOGLE_USE_GIS) !== 'true');
+    if (DISABLE) return;
     if (user) return; // No mostrar si ya hay sesión
     // Evitar interferir en la pantalla de login/signup, donde usamos formularios
     try {
