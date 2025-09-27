@@ -187,7 +187,9 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
       const CLIENT_ID = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID || '';
       // Debug mínimo para verificar carga de env
       try { console.debug('[login] VITE_GOOGLE_CLIENT_ID present:', !!CLIENT_ID); } catch {}
-      if (!CLIENT_ID) {
+      // Sólo usar GIS/FedCM en producción (humaniza.ai). En previews usa OAuth clásico.
+      const isProdHost = (typeof window !== 'undefined') && window.location.hostname.endsWith('humaniza.ai');
+      if (!CLIENT_ID || !isProdHost) {
         // Fallback a OAuth clásico de Supabase si no hay CLIENT_ID
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -243,7 +245,7 @@ export default function Login({ onLoggedIn, defaultMode = 'login' as 'login'|'si
     }
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: 'https://humaniza.ai#login' },
+      options: { redirectTo: (typeof window !== 'undefined' ? window.location.origin : 'https://humaniza.ai') + '#login' },
     });
     if (error) setErr(error.message);
   };
