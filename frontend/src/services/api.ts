@@ -60,9 +60,28 @@ export async function humanizeText(
     // Conectar a SSE para recibir actualizaciones de progreso
     return new Promise((resolve, reject) => {
       const eventSource = new EventSource(`${HUMANIZER_URL}/api/humanize/progress/${task_id}`);
+      let gotMessage = false;
+      const safetyTimer = setTimeout(() => {
+        if (!gotMessage) {
+          try { eventSource.close(); } catch {}
+          // Fallback directo si el stream no emite en 25s
+          fetch(`${HUMANIZER_URL}/api/humanize`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request),
+          })
+          .then(res => {
+            if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+            return res.json();
+          })
+          .then(resolve)
+          .catch(reject);
+        }
+      }, 25000);
       
       eventSource.onmessage = (event) => {
         try {
+          gotMessage = true;
           const data = JSON.parse(event.data);
           
           // Actualizar progreso
@@ -81,10 +100,10 @@ export async function humanizeText(
           
           // Si está completo, cerrar conexión y resolver
           if (data.status === 'completed' && data.result) {
-            eventSource.close();
+            clearTimeout(safetyTimer); eventSource.close();
             resolve(data.result);
           } else if (data.status === 'error') {
-            eventSource.close();
+            clearTimeout(safetyTimer); eventSource.close();
             reject(new Error(data.error || 'Error en el proceso'));
           }
         } catch (err) {
@@ -93,7 +112,7 @@ export async function humanizeText(
       };
       
       eventSource.onerror = (_error) => {
-        eventSource.close();
+        clearTimeout(safetyTimer); eventSource.close();
         // Fallback al método tradicional si SSE falla
         fetch(`${HUMANIZER_URL}/api/humanize`, {
           method: 'POST',
