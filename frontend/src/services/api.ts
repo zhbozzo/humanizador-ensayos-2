@@ -5,7 +5,11 @@ import type {
   DetectResponse 
 } from '../types';
 
-const API_BASE_URL = (import.meta as any).env?.VITE_BACKEND_URL || 'https://api.humaniza.ai';
+// URL del backend de humanización (FastAPI). No confundir con node-auth.
+// En producción configura VITE_HUMANIZER_URL apuntando al servicio FastAPI en Render.
+const HUMANIZER_URL = (import.meta as any).env?.VITE_HUMANIZER_URL
+  || (import.meta as any).env?.VITE_BACKEND_URL
+  || 'https://humaniza-api.onrender.com';
 
 interface ProgressUpdate {
   progress?: number;
@@ -24,13 +28,27 @@ export async function humanizeText(
 ): Promise<HumanizeResponse> {
   try {
     // Primero iniciamos la tarea
-    const startResponse = await fetch(`${API_BASE_URL}/api/humanize/start`, {
+    let startResponse = await fetch(`${HUMANIZER_URL}/api/humanize/start`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
+
+    if (startResponse.status === 404) {
+      // Algunos despliegues no exponen /start: usar fallback directo
+      const fallback = await fetch(`${HUMANIZER_URL}/api/humanize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request),
+      });
+      if (!fallback.ok) {
+        const errorData = await fallback.json().catch(() => null);
+        throw new Error(errorData?.detail || `Error ${fallback.status}: ${fallback.statusText}`);
+      }
+      return await fallback.json();
+    }
 
     if (!startResponse.ok) {
       const errorData = await startResponse.json().catch(() => null);
@@ -41,7 +59,7 @@ export async function humanizeText(
 
     // Conectar a SSE para recibir actualizaciones de progreso
     return new Promise((resolve, reject) => {
-      const eventSource = new EventSource(`${API_BASE_URL}/api/humanize/progress/${task_id}`);
+      const eventSource = new EventSource(`${HUMANIZER_URL}/api/humanize/progress/${task_id}`);
       
       eventSource.onmessage = (event) => {
         try {
@@ -77,7 +95,7 @@ export async function humanizeText(
       eventSource.onerror = (_error) => {
         eventSource.close();
         // Fallback al método tradicional si SSE falla
-        fetch(`${API_BASE_URL}/api/humanize`, {
+        fetch(`${HUMANIZER_URL}/api/humanize`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(request),
@@ -105,7 +123,7 @@ export async function detectAI(
 ): Promise<DetectResponse> {
   try {
     // Intentar flujo SSE primero
-    const startResponse = await fetch(`${API_BASE_URL}/api/detect/start`, {
+    const startResponse = await fetch(`${HUMANIZER_URL}/api/detect/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(request)
@@ -116,7 +134,7 @@ export async function detectAI(
     const { task_id } = await startResponse.json();
 
     return new Promise((resolve, reject) => {
-      const es = new EventSource(`${API_BASE_URL}/api/detect/progress/${task_id}`);
+      const es = new EventSource(`${HUMANIZER_URL}/api/detect/progress/${task_id}`);
       es.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
@@ -137,7 +155,7 @@ export async function detectAI(
               resolve(data.result as DetectResponse);
             } else {
               // Fallback a obtener por /api/detect si no vino el payload
-              fetch(`${API_BASE_URL}/api/detect`, {
+              fetch(`${HUMANIZER_URL}/api/detect`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(request)
@@ -157,7 +175,7 @@ export async function detectAI(
       es.onerror = () => {
         es.close();
         // Fallback a endpoint simple si SSE falla
-        fetch(`${API_BASE_URL}/api/detect`, {
+        fetch(`${HUMANIZER_URL}/api/detect`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(request)

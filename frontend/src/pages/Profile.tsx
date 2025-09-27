@@ -77,7 +77,7 @@ export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
             )}
           </div>
           {editingEmail && (
-            <form className="flex items-center gap-2 mt-1" onSubmit={async (e)=>{
+            <form className="mt-2 p-2 rounded-lg border border-cyan-200 bg-cyan-50/60 flex items-center gap-2 animate-fade-up" onSubmit={async (e)=>{
               e.preventDefault();
               try {
                 setBusy(true); setError(null);
@@ -97,11 +97,11 @@ export default function Profile({ onGoPricing }: { onGoPricing: () => void }) {
               <input
                 value={contactEmail}
                 onChange={(e)=>setContactEmail(e.target.value)}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                className="border border-cyan-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 w-64 transition"
                 placeholder="you@email.com"
               />
-              <button disabled={busy} className="text-xs px-2 py-1 rounded bg-cyan-600 text-white disabled:opacity-60">{locale==='es' ? 'Guardar' : 'Save'}</button>
-              <button type="button" onClick={()=>{ setEditingEmail(false); setContactEmail(profile?.email || user.email || ''); }} className="text-xs px-2 py-1 rounded border border-gray-300 text-gray-700">{locale==='es' ? 'Cancelar' : 'Cancel'}</button>
+              <button disabled={busy} className="text-xs px-3 py-2 rounded bg-cyan-600 text-white disabled:opacity-60 hover:bg-cyan-700 transition">{locale==='es' ? 'Guardar' : 'Save'}</button>
+              <button type="button" onClick={()=>{ setEditingEmail(false); setContactEmail(profile?.email || user.email || ''); }} className="text-xs px-3 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition">{locale==='es' ? 'Cancelar' : 'Cancel'}</button>
             </form>
           )}
           {provider === 'apple' && user.email?.endsWith('@privaterelay.appleid.com') && !editingEmail && (
