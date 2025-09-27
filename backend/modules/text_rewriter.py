@@ -17,7 +17,7 @@ class TextRewriter:
         """Inicializa el cliente LLM priorizando Qwen (DashScope) con compatibilidad OpenAI."""
         print("[TextRewriter] Inicializando...")
 
-        # Prioridad: Qwen (DashScope) → DeepSeek → OpenAI → demo
+        # Prioridad: Qwen (DashScope) → OpenAI → demo (DeepSeek retirado por petición)
         self.api_key = os.getenv("DASHSCOPE_API_KEY")
         if self.api_key:
             self.client = AsyncOpenAI(
@@ -26,23 +26,14 @@ class TextRewriter:
             )
             print("[API] Usando Qwen (DashScope) compatible OpenAI")
         else:
-            # DeepSeek
-            self.api_key = os.getenv("DEEPSEEK_API_KEY")
+            # OpenAI
+            self.api_key = os.getenv("OPENAI_API_KEY")
             if self.api_key:
-                self.client = AsyncOpenAI(
-                    api_key=self.api_key,
-                    base_url="https://api.deepseek.com"
-                )
-                print("[API] Usando DeepSeek API")
+                self.client = AsyncOpenAI(api_key=self.api_key)
+                print("[API] Usando OpenAI API")
             else:
-                # OpenAI
-                self.api_key = os.getenv("OPENAI_API_KEY")
-                if self.api_key:
-                    self.client = AsyncOpenAI(api_key=self.api_key)
-                    print("[API] Usando OpenAI API")
-                else:
-                    self.client = None
-                    print("[API] No hay API key válida - modo demo activado")
+                self.client = None
+                print("[API] No hay API key válida - modo demo activado")
         
         
         # Prompt cognitivo (CEREZOS v2.1) más cercano a firma humana real
@@ -157,16 +148,17 @@ REGLAS
             requested = limit
         return requested
     
-    async def rewrite(self, 
-                      text: str, 
-                      budget: float = 0.2, 
-                      respect_style: bool = False, 
+    async def rewrite(self,
+                      text: str,
+                      budget: float = 0.2,
+                      respect_style: bool = False,
                       style_sample: Optional[str] = None,
                       frozen_entities: List[str] = None,
                       voice: Optional[str] = None,
+                      *,
+                      include_titles: bool = False,
                       progress_callback: Optional[Callable[[str, int, int], Awaitable[None]]] = None,
-                      detector_feedback: Optional[Dict[str, float]] = None,
-                      token_callback: Optional[Callable[[int, int], Awaitable[None]]] = None) -> Dict[str, Any]:
+                      token_callback: Optional[Callable[[int, int, int, str], Awaitable[None]]] = None) -> Dict[str, Any]:
         """
         Rewrite text to make it more human-like while respecting constraints.
         
@@ -328,7 +320,7 @@ REGLAS
                 text=text,
                 frozen_entities=frozen_entities or [],
                 voice=voice,
-                include_titles=self._definitive_mode and True
+                include_titles=include_titles
             )
             
             if progress_callback:
@@ -341,11 +333,9 @@ REGLAS
             if use_streaming:
                 try:
                     # Modelo: prioriza Qwen si hay DASHSCOPE_API_KEY
-                    dash_model = os.getenv("QWEN_MODEL", "qwen-plus")
-                    deepseek_model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
-                    model_name = dash_model if os.getenv("DASHSCOPE_API_KEY") else deepseek_model
+                    model_name = os.getenv("QWEN_MODEL", "qwen-max")
                     stream = await self.client.chat.completions.create(
-                        model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+                        model=model_name,
                         messages=[
                             {"role": "system", "content": self.system_prompt},
                             {"role": "user", "content": user_prompt}
@@ -380,9 +370,7 @@ REGLAS
                 except Exception:
                     raw = ""
             if not raw:
-                dash_model = os.getenv("QWEN_MODEL", "qwen-plus")
-                deepseek_model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
-                model_name = dash_model if os.getenv("DASHSCOPE_API_KEY") else deepseek_model
+                model_name = os.getenv("QWEN_MODEL", "qwen-max")
                 response = await self.client.chat.completions.create(
                     model=model_name,
                     messages=[
